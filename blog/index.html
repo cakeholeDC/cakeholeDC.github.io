@@ -7,60 +7,7 @@
     <script src="script.js"></script>
   </head>
   <body>
-    <!-- page content -->
-	<h1>A Rubyist's Guide to SQL Joins</h1>
-
-	<p>If you've ever had a job that required you to run reports, you've probably had some light exposure to SQL <em>(Structured Markup Language)</em>. You've probably noticed that even if you don't have any coding experience, the syntax is pretty readable.</p>
-
-	<pre>
-		<code class="lang-sql">SELECT column FROM table WHERE (column = 'value')
-		</code>
-	</pre>
-
-	<p>Even if you don't know what the data is, you can draw the conclusion that we're <code>SELECT</code>ing <em>something</em> <code>FROM</code> <em>something else</em> <code>WHEN</code> a condition is met. You can probably even guess what that condition is! Pretty simple, right? Well, it is. Until <code>JOIN</code> enters the picture...</p>
-
-	<p>For years, I struggled with how to properly <code>JOIN</code> two tables. In fact, I hated them so much that my go to move was to download the data to <em>.csv</em> and perform a bunch of <code>VLOOKUP</code> functions in Excel™</p>
-
-	<p><p align="center"><img src="https://media.giphy.com/media/DBa308wq8XTMs/source.gif" alt="shudder.gif"></p>
-
-	<p>I know. <strong>I apologize.</strong></p>
-
-	<p>The reason I was scared of <code>JOIN</code>s is because whenever I looked up examples and documentaiton I always found something that looked like this:</p>
-
-	<pre>
-		<code class="lang-sql">SELECT * FROM employees e
-		  JOIN jobs j ON e.job_id = j.job_id
-		  LEFT JOIN employees m ON e.manager_id = m.employee_id
-		  INNER JOIN departments d ON d.department_id = e.department_id
-		  OUTER JOIN employees dm ON d.manager_id = dm.employee_id
-		  LEFT JOIN locations l ON d.location_id = l.location_id
-		  LEFT JOIN countries c ON l.country_id = c.country_id
-		  RIGHT JOIN regions r ON c.region_id = r.region_id
-		  LEFT OUTER JOIN jobs jj ON jj.job_id = jh.job_id
-		ORDER BY e.employee_id;
-		</code>
-	</pre>
-
-	<p>I'd then inevitably come across some super useful documentation like this paired with a lunar calendar of venn diagrams <em>(if you're thinking that's not how venn diagrams work, you're right)</em>.</p>
-
-	<p style="width: 35%; margin: auto; float:left; padding-right:2em;" align="center">
-	<img src="https://miro.medium.com/max/3200/1*jAt5tID0Kc9B-8AGbeBivw.png" alt="joins"></p>
-
-	<blockquote>
-		<p><strong>(INNER) JOIN:</strong> Returns records that have matching values in both tables
-		<strong>LEFT (OUTER) JOIN:</strong> Returns all records from the left table, with matches from the right
-		<strong>RIGHT (OUTER) JOIN:</strong> Returns all records from the right table, with matches from the left
-		<strong>FULL (OUTER) JOIN:</strong> Returns all records when there is a match</p>
-		
-		<p><strong>TIPS:</strong> <em><strong>FULL OUTER JOIN</strong></em>, <em><strong>FULL JOIN</strong></em> and <em><strong>LEFT JOIN</strong></em> are all the same. <em><strong>RIGHT JOIN</strong></em> is the opposite of <em><strong>LEFT JOIN</strong></em>.</p>
-	</blockquote>
-
-	<p style="width: 70%; margin: auto;" align="center">
-		<img src="https://media.giphy.com/media/vc0KiL9PrHzLMZpjyh/giphy.gif" alt="wait, what?">
-		<br><span style="font-size: .8em;"><em><strong>Excuse me, what?</strong> If FULL OUTER returns matches in the LEFT and RIGHT, then what use LEFT and RIGHT? And if LEFT is the same as FULL, then why have two different options? What does full mean anyways? I'm so confused...</em></p>
-
-	<p>After seeing this graphic  </p>
-
+    <object data="ruby_guide_to_sql.html" type="text/html"></object>
   </body>
 </html>
 

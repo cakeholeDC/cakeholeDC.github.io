@@ -1,123 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Ruby Guide to SQL</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
-  </head>
-  <body>
-    <!-- page content -->
-	<h1>A Rubyist's Guide to SQL Joins</h1>
+<p>#A Rubyist&#39;s Guide to SQL Joins</p>
+<p>If you&#39;ve ever had a job that required you to run reports, you&#39;ve probably had some light exposure to SQL <em>(Structured Markup Language)</em>. You&#39;ve probably noticed that even if you don&#39;t have any coding experience, the syntax is pretty readable.</p>
+<pre><code class="language-sql">SELECT column FROM table WHERE (column = &#39;value&#39;)</code></pre>
+<p>Even if you don&#39;t know what the data is, you can draw the conclusion that we&#39;re <code>SELECT</code>ing <em>something</em> <code>FROM</code> <em>something else</em> <code>WHEN</code> a condition is met. You can probably even guess what that condition is! Pretty simple, right? Well, it is. Until <code>JOIN</code> enters the picture...</p>
+<p>For years, I struggled with how to properly <code>JOIN</code> two tables. In fact, I hated them so much that my go to move was to download the data to <em>.csv</em> and perform a bunch of <code>VLOOKUP</code> functions in Excel™</p>
+<p align="center">![shudder.gif](https://media.giphy.com/media/DBa308wq8XTMs/source.gif)
 
-	<p>If you've ever had a job that required you to run reports, you've probably had some light exposure to SQL <em>(Structured Markup Language)</em>. You've probably noticed that even if you don't have any coding experience, the syntax is pretty readable.</p>
+<p>I know. <strong>I apologize.</strong></p>
+<p>The reason I was scared of <code>JOIN</code>s is because whenever I looked up examples and documentation I always found something that looked like this:</p>
+<pre><code class="language-sql">SELECT * FROM employees e
+  JOIN jobs j ON e.job_id = j.job_id
+  LEFT JOIN employees m ON e.manager_id = m.employee_id
+  INNER JOIN departments d ON d.department_id = e.department_id
+  OUTER JOIN employees dm ON d.manager_id = dm.employee_id
+  LEFT JOIN locations l ON d.location_id = l.location_id
+  LEFT JOIN countries c ON l.country_id = c.country_id
+  RIGHT JOIN regions r ON c.region_id = r.region_id
+  LEFT OUTER JOIN jobs jj ON jj.job_id = jh.job_id
+ORDER BY e.employee_id;</code></pre>
+<p>I&#39;d then inevitably come across some super useful documentation like this paired with a lunar calendar of venn diagrams <em>(if you&#39;re thinking that&#39;s not how venn diagrams work, you&#39;re right).</em></p>
+<blockquote>
+<p><strong>(INNER) JOIN:</strong> Returns records that have matching values in both tables<br>
+<strong>LEFT (OUTER) JOIN:</strong> Returns all records from the left table, with matches from the right<br>
+<strong>RIGHT (OUTER) JOIN:</strong> Returns all records from the right table, with matches from the left<br>
+<strong>FULL (OUTER) JOIN:</strong> Returns all records when there is a match</p>
+<p><strong>TIPS:</strong> <em><strong>FULL OUTER JOIN</strong></em>, <em><strong>FULL JOIN</strong></em> and <em><strong>LEFT JOIN</strong></em> are all the same.<br>
+<em><strong>RIGHT JOIN</strong></em> is the opposite of <em><strong>LEFT JOIN</strong></em>.</p>
+</blockquote>
+<p><img src="./sql-joins-moon-phases_600px.jpg" alt="joins"></p>
+<p style="width: 70%; margin: auto;" align="center">
+![wait, what?](https://media.giphy.com/media/vc0KiL9PrHzLMZpjyh/giphy.gif)
+<br><span style="font-size: .8em;">_**Excuse me, what?** If FULL OUTER returns matches in the LEFT and RIGHT, then why use LEFT and RIGHT? And if LEFT is the same as FULL, then why have two different options? What does FULL mean anyways? I'm so confused..._ 
 
-	<pre>
-		<code class="lang-sql">SELECT column FROM table WHERE (column = 'value')</code>
-	</pre>
+<p>Each time I saw this graphic I thought to myself <em>&quot;there <strong>has</strong> to be better explanation of this on the internet.&quot;</em> But after years of searching, I&#39;ve turned up nothing but variations of this lunar calendar graphic. So, I took the matter into my own hands and decided to write out each <code>JOIN</code> using a language I have a good grasp on; <strong>Ruby</strong></p>
+<p>So, withouth further ado, here are <strong>SQL Joins as Ruby Methods</strong>.</p>
+<p><em><strong>NOTE:</strong> While the RUBY syntax below looks correct, this is pseudo code meant to represent SQL actions. I do not recommend that you copy and paste anything into your application.</em></p>
+<p>###INNER JOIN
+I decided to start with the one that <em>did</em> make sense to me, the only one that <em>does</em> work like a venn diagram (but who asked me). An <code>INNER JOIN</code> will iterate through each row in the first table, and select that row when there is a match in the second table. When selecting that row, the data from the second table is also included in the new dataset.</p>
+<p>Here it is in <strong>Ruby</strong></p>
+<pre><code class="language-rb">def INNER_JOIN(table_1, table_2)
+    new_table = {} ## create a new empty table
 
-	<p>Even if you don't know what the data is, you can draw the conclusion that we're <code>SELECT</code>ing <em>something</em> <code>FROM</code> <em>something else</em> <code>WHEN</code> a condition is met. You can probably even guess what that condition is! Pretty simple, right? Well, it is. Until <code>JOIN</code> enters the picture...</p>
+    table_1.select do |table_1_row|
+    # for each row in table_1
 
-	<p>For years, I struggled with how to properly <code>JOIN</code> two tables. In fact, I hated them so much that my go to move was to download the data to <em>.csv</em> and perform a bunch of <code>VLOOKUP</code> functions in Excel™</p>
+    table_2_match = table_2.find do |table_2_row| 
+        # scan table_2 and find the data that matches
+        table_2_row.column == table_1_row.column
+    end
 
-	<p align="center"><img src="https://media.giphy.com/media/DBa308wq8XTMs/source.gif" alt="shudder.gif"></p>
+    if table_2_match # if a match is found (if result is true), add specified column(s) to new_table as a key/value pair
+        new_table[:table_1_data] = table_1_row.column
+        new_table[:table_2_data] = table_2_row_match.column
+    end    
+    # if no data was matched, no data from either table will be added to new_table
 
-	<p>I know. <strong>I apologize.</strong></p>
+    return new_table
+end</code></pre>
+<p>We&#39;ll refer to this as a <code>.select/.select</code> relationship. I know, we used <code>.find</code> on table_2. But, we are still in theory <em>selecting</em> data subsets from both tables, since we end up with a subset of both original tables.</p>
+<p>###LEFT JOIN
+What a <code>LEFT JOIN</code> does is iterate through each row in the first table, and checks the second table for a corresponding value. If the second table contains a match, the data from the second table is appended to that row the first table. <strong>All rows from the first table are always returned.</strong></p>
+<p>We&#39;ll refer this as a <code>.map/.find</code> relationship. We are <em>mapping</em> the first set of data to a new dataset. While doing so, we are iterating over the second data set to find a match to be inclued in our new data set.</p>
+<pre><code class="language-rb">def LEFT_JOIN(table_1, table_2)
+    new_table = {}
 
-	<p>The reason I was scared of <code>JOIN</code>s is because whenever I looked up examples and documentaiton I always found something that looked like this:</p>
+    table_1.map do |table_1_row|
+    # for each row in table_1
 
-	<pre>
-		<code class="lang-sql">SELECT * FROM employees e
-		  JOIN jobs j ON e.job_id = j.job_id
-		  LEFT JOIN employees m ON e.manager_id = m.employee_id
-		  INNER JOIN departments d ON d.department_id = e.department_id
-		  OUTER JOIN employees dm ON d.manager_id = dm.employee_id
-		  LEFT JOIN locations l ON d.location_id = l.location_id
-		  LEFT JOIN countries c ON l.country_id = c.country_id
-		  RIGHT JOIN regions r ON c.region_id = r.region_id
-		  LEFT OUTER JOIN jobs jj ON jj.job_id = jh.job_id
-		ORDER BY e.employee_id;
-		</code>
-	</pre>
+    table_2_match = table_2.find do |table_2_row| 
+        # scan table_2 and find the data that matches
+        table_2_row.column == table_1_row.column
+    end
 
-	<p>I'd then inevitably come across some super useful documentation like this paired with a lunar calendar of venn diagrams <em>(if you're thinking that's not how venn diagrams work, you're right)</em>.</p>
+    if table_2_match # if a match is found (if result is true), add entire row from table_1, and the specificed column(s) from table_2 to the new_table as a key/value pair
+        new_table[:table_1_data] = table_1_row # Notice, we&#39;re including the entire row of data this time
+        new_table[:table_2_data] = table_2_match.column
+    end    
+    # if no data was matched, no data from either table will be added to new_table
 
-	<p align="center" style="padding-top: 2em; padding-bottom: 2em;">
-	<img src="https://4.bp.blogspot.com/-_HsHikmChBI/VmQGJjLKgyI/AAAAAAAAEPw/JaLnV0bsbEo/s1600/sql%2Bjoins%2Bguide%2Band%2Bsyntax.jpg" alt="joins" style="height: 10em;"></p>
+    return new_table
+end</code></pre>
+<p>Why is this called a <em>LEFT</em> join? Well, in English we read from left to right. Look at the arguments for this method, which table appears on the left?</p>
+<p>###RIGHT JOIN
+We already know from that handy documentation above that a <code>RIGHT JOIN</code> is the opposite of a <code>LEFT JOIN</code>. Knowing that, we can asuume that a <code>RIGHT JOIN</code> works the same way, except it iterates thorugh table_2 <strong>first</strong> (using <code>.map</code>) and then iterates through table_1 using <code>.each</code>.</p>
+<pre><code class="language-rb">def RIGHT_JOIN(table_1, table_2)
+    new_table = {}
 
-	<blockquote>
-		<code>
-			<p><strong>(INNER) JOIN:</strong> Returns records that have matching values in both tables
-			<br><strong>LEFT (OUTER) JOIN:</strong> Returns all records from the left table, with matches from the right
-			<br><strong>RIGHT (OUTER) JOIN:</strong> Returns all records from the right table, with matches from the left
-			<br><strong>FULL (OUTER) JOIN:</strong> Returns all records when there is a match</p>
-			
-			<p><strong>TIPS:</strong> <em><strong>FULL OUTER JOIN</strong></em>, <em><strong>FULL JOIN</strong></em> and <em><strong>LEFT JOIN</strong></em> are all the same. <em><strong>RIGHT JOIN</strong></em> is the opposite of <em><strong>LEFT JOIN</strong></em>.</p>
-		</code>	
-	</blockquote>
+    table_1.map do |table_2_row|
+    # for each row in table_2
 
-	
-	<p align="center" style="padding-top: 2em; padding-bottom: 2em; width: 40%; margin: auto;"><img src="https://media.giphy.com/media/vc0KiL9PrHzLMZpjyh/giphy.gif" alt="wait, what?">
-	<span style="font-size: .8em;"><em><strong><br>Excuse me, what?</strong> If FULL OUTER returns matches in the LEFT and RIGHT, then what use LEFT and RIGHT? And if LEFT is the same as FULL, then why have two different options? What does full mean anyways? I'm so confused...</em></span></p>
+    table_1_match = table_1.find do |table_1_row| 
+        # scan table_1 and find the data that matches
+        table_1_row.column == table_2_row.column
+    end
 
-	<p>Each time I saw this graphic I thought to myself "there <em>has</em> to be better explanation of this on the internet." But after years of searching, I've turned up nothing but variations of this lunar calendar graphic. So, I took the matter into my own hands and decided to write out each <code>JOIN</code> using a language I have a good grasp on; <strong>Ruby</strong></p>
+    if table_1_match # if a match is found add the entire table_2_row, and table_1_row.column to the new_table as a key/value pair
+        new_table[:table_2_data] = table_2_row # Notice, we&#39;re including the entire row of data this time
+        new_table[:table_1_data] = table_1_match.column
+    end    
+    # if no data was matched, no data from either table will be added to new_table
 
-	<p>So, withouth further ado, here are SQL Joins as Ruby Methods.</p>
-
-	<p>I decided to the one that <em>did</em> make sense to me, the <code>INNER JOIN</code> (The only proper venn diagram, but who asked me).
-	<pre>
-		<code class="lang-rb">
-			def JOIN(table_1, table_2)
-
-			# for each row in table_1, return the row if
-			# table_1_row matches the result of
-			table_1.select do |table_1_row| 
-
-				# checking each row in table_2 to see if
-				table_2.each do |table_2_row| 
-					# that row's specified column is equal to the specified column in the current row of table_1
-					result = table_2_row.column == table_1_row.column
-					# if that result is true
-					if result
-						# merge the data from table_2_row into table_1_row
-						table_1_row << table_2_row
-					end
-
-					# the result is false, no rows will be returned
-				end
-
-				# if table_2 did not match, table_1_row will not be returned
-			end
-		</code>
-	</pre>
-
-	<h3>LEFT JOIN</h3>
-	<p>What a <code>LEFT JOIN</code> does is iterate through each row in the first table, and checks the second table for a corresponding value. If the second table contains a match, the data from the second table is appended to that row the first table. This is called a LEFT join only because we read from left to right, that's it.</p>
-
-	<p>We'll refer this as a <code>.map/.each</code> relationship</p>
-		<pre>
-			<code class="lang-rb">
-				def LEFT_JOIN(table_1, table_2)
-				
-					table_1.each do |table_1_row| # for each row in table_1
-					
-						# check if table_1_row matches
-						table_2.each do |table_2_row| # any row in table_2 to see if
-						
-							result = table_2_row.column == table_1_row.column # a column value in table_2's row is equal to a column value in the current row of table_1
-
-							if result # if a match is found (if result is true)
-								table_1_row << table_2_row # merge the data from table_2_row into table_1_row
-							end
-						# if no data was matched, no data is appended to table_1_row
-						end
-					# if table_2 did not match, table_1_row will still be returned without any changes
-					end
-				# because this is a .map enumerator, we will get the all rows from table_1 back.
-				end
-			</code>
-		</pre>
-  </body>
-</html>
-
+    return new_table
+end</code></pre>
+<p>Why is this called a <em>RIGHT</em> join. Again, we read from left to right. Look at the arguments for this method, which table appears on the right? You&#39;ll also notice that we just switched the order in wich we iterate through the tables. </p>
+<p>###OUTER JOIN
+I actually had a really hard time writing this one in Ruby. I think that&#39;s because I couldn&#39;t think of a practical example in which I&#39;d need an <code>OUTER JOIN</code> so it was hard for me to walk through the process logically. So, I&#39;m going to just skip it for now. I&#39;ll figure it out when the time comes.</p>
+<p>###CONCLUSION
+Even after doing this exercise, SQL joins remain a pain in the @$$ (oh stop, that&#39;s an instance variable). But, hopefully they make a little more sense to you now. If not, there&#39;s always <a href="https://rubygems.org/gems/activerecord/"><strong>Active Record</strong></a>. </p>
+<p>Actually, even if you <em>do</em> understand SQL joins, just use <strong>Active Record</strong>. It&#39;ll change your life as a Rubyist.☺️</p>
+<p align="center">![I'm a changed man](https://media.giphy.com/media/nTayqvgw3Wk3m/source.gif)
 

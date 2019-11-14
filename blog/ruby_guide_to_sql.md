@@ -1,4 +1,4 @@
-#A Rubyist's Guide to SQL Joins
+# A Rubyist's Guide to SQL Joins
 
 If you've ever had a job that required you to run reports, you've probably had some light exposure to SQL _(Structured Markup Language)_. You've probably noticed that even if you don't have any coding experience, the syntax is pretty readable.
 
@@ -52,7 +52,7 @@ So, withouth further ado, here are **SQL Joins as Ruby Methods**.
 
 _**NOTE:** While the RUBY syntax below looks correct, this is pseudo code meant to represent SQL actions. I do not recommend that you copy and paste anything into your application._
 
-###INNER JOIN
+### INNER JOIN
 I decided to start with the one that _did_ make sense to me, the only one that _does_ work like a venn diagram (but who asked me). An `INNER JOIN` will iterate through each row in the first table, and select that row when there is a match in the second table. When selecting that row, the data from the second table is also included in the new dataset.
 
 Here it is in **Ruby**
@@ -80,7 +80,7 @@ end
 ```
 We'll refer to this as a `.select/.select` relationship. I know, we used `.find` on table_2. But, we are still in theory _selecting_ data subsets from both tables, since we end up with a subset of both original tables.
 
-###LEFT JOIN
+### LEFT JOIN
 What a `LEFT JOIN` does is iterate through each row in the first table, and checks the second table for a corresponding value. If the second table contains a match, the data from the second table is appended to that row the first table. **All rows from the first table are always returned.**
 
 We'll refer this as a `.map/.find` relationship. We are _mapping_ the first set of data to a new dataset. While doing so, we are iterating over the second data set to find a match to be inclued in our new data set.
@@ -108,7 +108,7 @@ end
 ```
 Why is this called a _LEFT_ join? Well, in English we read from left to right. Look at the arguments for this method, which table appears on the left?
 
-###RIGHT JOIN
+### RIGHT JOIN
 We already know from that handy documentation above that a `RIGHT JOIN` is the opposite of a `LEFT JOIN`. Knowing that, we can asuume that a `RIGHT JOIN` works the same way, except it iterates thorugh table\_2 **first** (using `.map`) and then iterates through table\_1 using `.each`.
 
 ```rb
@@ -134,11 +134,11 @@ end
 ```
 Why is this called a _RIGHT_ join. Again, we read from left to right. Look at the arguments for this method, which table appears on the right? You'll also notice that we just switched the order in wich we iterate through the tables. 
 
-###OUTER JOIN
+### OUTER JOIN
 I actually had a really hard time writing this one in Ruby. I think that's because I couldn't think of a practical example in which I'd need an `OUTER JOIN` so it was hard for me to walk through the process logically. So, I'm going to just skip it for now. I'll figure it out when the time comes.
 
 
-###CONCLUSION
+### CONCLUSION
 Even after doing this exercise, SQL joins remain a pain in the @$$ (oh stop, that's an instance variable). But, hopefully they make a little more sense to you now. If not, there's always [**Active Record**](https://rubygems.org/gems/activerecord/). 
 
 Actually, even if you _do_ understand SQL joins, just use **Active Record**. It'll change your life as a Rubyist.☺️

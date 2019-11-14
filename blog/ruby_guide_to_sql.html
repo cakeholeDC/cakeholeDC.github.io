@@ -13,15 +13,14 @@
 	<p>If you've ever had a job that required you to run reports, you've probably had some light exposure to SQL <em>(Structured Markup Language)</em>. You've probably noticed that even if you don't have any coding experience, the syntax is pretty readable.</p>
 
 	<pre>
-		<code class="lang-sql">SELECT column FROM table WHERE (column = 'value')
-		</code>
+		<code class="lang-sql">SELECT column FROM table WHERE (column = 'value')</code>
 	</pre>
 
 	<p>Even if you don't know what the data is, you can draw the conclusion that we're <code>SELECT</code>ing <em>something</em> <code>FROM</code> <em>something else</em> <code>WHEN</code> a condition is met. You can probably even guess what that condition is! Pretty simple, right? Well, it is. Until <code>JOIN</code> enters the picture...</p>
 
 	<p>For years, I struggled with how to properly <code>JOIN</code> two tables. In fact, I hated them so much that my go to move was to download the data to <em>.csv</em> and perform a bunch of <code>VLOOKUP</code> functions in Excel™</p>
 
-	<p><p align="center"><img src="https://media.giphy.com/media/DBa308wq8XTMs/source.gif" alt="shudder.gif"></p>
+	<p align="center"><img src="https://media.giphy.com/media/DBa308wq8XTMs/source.gif" alt="shudder.gif"></p>
 
 	<p>I know. <strong>I apologize.</strong></p>
 
@@ -43,24 +42,81 @@
 
 	<p>I'd then inevitably come across some super useful documentation like this paired with a lunar calendar of venn diagrams <em>(if you're thinking that's not how venn diagrams work, you're right)</em>.</p>
 
-	<p style="width: 35%; margin: auto; float:left; padding-right:2em;" align="center">
-	<img src="https://miro.medium.com/max/3200/1*jAt5tID0Kc9B-8AGbeBivw.png" alt="joins"></p>
+	<p align="center" style="padding-top: 2em; padding-bottom: 2em;">
+	<img src="https://4.bp.blogspot.com/-_HsHikmChBI/VmQGJjLKgyI/AAAAAAAAEPw/JaLnV0bsbEo/s1600/sql%2Bjoins%2Bguide%2Band%2Bsyntax.jpg" alt="joins" style="height: 10em;"></p>
 
 	<blockquote>
-		<p><strong>(INNER) JOIN:</strong> Returns records that have matching values in both tables
-		<strong>LEFT (OUTER) JOIN:</strong> Returns all records from the left table, with matches from the right
-		<strong>RIGHT (OUTER) JOIN:</strong> Returns all records from the right table, with matches from the left
-		<strong>FULL (OUTER) JOIN:</strong> Returns all records when there is a match</p>
-		
-		<p><strong>TIPS:</strong> <em><strong>FULL OUTER JOIN</strong></em>, <em><strong>FULL JOIN</strong></em> and <em><strong>LEFT JOIN</strong></em> are all the same. <em><strong>RIGHT JOIN</strong></em> is the opposite of <em><strong>LEFT JOIN</strong></em>.</p>
+		<code>
+			<p><strong>(INNER) JOIN:</strong> Returns records that have matching values in both tables
+			<br><strong>LEFT (OUTER) JOIN:</strong> Returns all records from the left table, with matches from the right
+			<br><strong>RIGHT (OUTER) JOIN:</strong> Returns all records from the right table, with matches from the left
+			<br><strong>FULL (OUTER) JOIN:</strong> Returns all records when there is a match</p>
+			
+			<p><strong>TIPS:</strong> <em><strong>FULL OUTER JOIN</strong></em>, <em><strong>FULL JOIN</strong></em> and <em><strong>LEFT JOIN</strong></em> are all the same. <em><strong>RIGHT JOIN</strong></em> is the opposite of <em><strong>LEFT JOIN</strong></em>.</p>
+		</code>	
 	</blockquote>
 
-	<p style="width: 70%; margin: auto;" align="center">
-		<img src="https://media.giphy.com/media/vc0KiL9PrHzLMZpjyh/giphy.gif" alt="wait, what?">
-		<br><span style="font-size: .8em;"><em><strong>Excuse me, what?</strong> If FULL OUTER returns matches in the LEFT and RIGHT, then what use LEFT and RIGHT? And if LEFT is the same as FULL, then why have two different options? What does full mean anyways? I'm so confused...</em></p>
+	
+	<p align="center" style="padding-top: 2em; padding-bottom: 2em; width: 40%; margin: auto;"><img src="https://media.giphy.com/media/vc0KiL9PrHzLMZpjyh/giphy.gif" alt="wait, what?">
+	<span style="font-size: .8em;"><em><strong><br>Excuse me, what?</strong> If FULL OUTER returns matches in the LEFT and RIGHT, then what use LEFT and RIGHT? And if LEFT is the same as FULL, then why have two different options? What does full mean anyways? I'm so confused...</em></span></p>
 
-	<p>After seeing this graphic  </p>
+	<p>Each time I saw this graphic I thought to myself "there <em>has</em> to be better explanation of this on the internet." But after years of searching, I've turned up nothing but variations of this lunar calendar graphic. So, I took the matter into my own hands and decided to write out each <code>JOIN</code> using a language I have a good grasp on; <strong>Ruby</strong></p>
 
+	<p>So, withouth further ado, here are SQL Joins as Ruby Methods.</p>
+
+	<p>I decided to the one that <em>did</em> make sense to me, the <code>INNER JOIN</code> (The only proper venn diagram, but who asked me).
+	<pre>
+		<code class="lang-rb">
+			def JOIN(table_1, table_2)
+
+			# for each row in table_1, return the row if
+			# table_1_row matches the result of
+			table_1.select do |table_1_row| 
+
+				# checking each row in table_2 to see if
+				table_2.each do |table_2_row| 
+					# that row's specified column is equal to the specified column in the current row of table_1
+					result = table_2_row.column == table_1_row.column
+					# if that result is true
+					if result
+						# merge the data from table_2_row into table_1_row
+						table_1_row << table_2_row
+					end
+
+					# the result is false, no rows will be returned
+				end
+
+				# if table_2 did not match, table_1_row will not be returned
+			end
+		</code>
+	</pre>
+
+	<h3>LEFT JOIN</h3>
+	<p>What a <code>LEFT JOIN</code> does is iterate through each row in the first table, and checks the second table for a corresponding value. If the second table contains a match, the data from the second table is appended to that row the first table. This is called a LEFT join only because we read from left to right, that's it.</p>
+
+	<p>We'll refer this as a <code>.map/.each</code> relationship</p>
+		<pre>
+			<code class="lang-rb">
+				def LEFT_JOIN(table_1, table_2)
+				
+					table_1.each do |table_1_row| # for each row in table_1
+					
+						# check if table_1_row matches
+						table_2.each do |table_2_row| # any row in table_2 to see if
+						
+							result = table_2_row.column == table_1_row.column # a column value in table_2's row is equal to a column value in the current row of table_1
+
+							if result # if a match is found (if result is true)
+								table_1_row << table_2_row # merge the data from table_2_row into table_1_row
+							end
+						# if no data was matched, no data is appended to table_1_row
+						end
+					# if table_2 did not match, table_1_row will still be returned without any changes
+					end
+				# because this is a .map enumerator, we will get the all rows from table_1 back.
+				end
+			</code>
+		</pre>
   </body>
 </html>
 
